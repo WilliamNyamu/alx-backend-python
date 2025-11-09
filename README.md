@@ -1,0 +1,3 @@
+- Created a csv file and seeded the data into it.
+- Used the seed.py to create the db and the table and seed data
+- Bonus! Timed how long it takes for main.py to execute
