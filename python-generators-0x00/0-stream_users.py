@@ -15,7 +15,7 @@ def stream_users():
             database = 'ALX_prodev',
         ) as connection:
             with connection.cursor(buffered=True) as cursor: # we put buffered=True to ensure that we don't get the error of Unread result found.
-                cursor.execute("SELECT * FROM user_data")
+                cursor.execute("SELECT * FROM user_data;")
                 # Do not load everything in memory
                 for row in cursor:
                     yield row
