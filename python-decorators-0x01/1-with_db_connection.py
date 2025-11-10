@@ -9,9 +9,7 @@ def with_db_connection(func):
     def wrapper(*args, **kwargs):
         try:
             connection = sqlite3.connect('users.db')
-            conn = kwargs.get('conn') or (args[0] if args else None)
-            conn = connection
-            value = func(conn, *args, **kwargs)
+            value = func(connection, *args, **kwargs)
             connection.close()
             return value
         except Error as e:
