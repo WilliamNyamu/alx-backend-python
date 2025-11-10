@@ -1,0 +1,24 @@
+import sqlite3
+import functools
+
+
+def log_queries(func):
+    @functools.wraps(func)
+    def wrapper(*args, **kwargs):
+        value = func(*args, **kwargs)
+        query = kwargs.get('query') or (args[0] if args else None) # retrieve the query from the kwargs or the args
+        print(query) # print the query before executing it
+        return value
+    return wrapper
+
+@log_queries
+def fetch_all_users(query):
+    conn = sqlite3.connect('users.db')
+    cursor = conn.cursor()
+    cursor.execute(query)
+    results = cursor.fetchall()
+    conn.close()
+    return results
+
+users = fetch_all_users("SELECT name FROM users LIMIT 5;")
+print(users)
