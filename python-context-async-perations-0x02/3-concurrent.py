@@ -28,8 +28,8 @@ async def async_fetch_older_users():
             print(f"Error occured: {e}")
         
 
-async def fetchconcurrently():
+async def fetch_concurrently():
     all_users, older_users = await asyncio.gather(async_fetch_users(), async_fetch_older_users())
     return all_users, older_users
 
-print(asyncio.run(fetchconcurrently()))
+print(asyncio.run(fetch_concurrently()))
