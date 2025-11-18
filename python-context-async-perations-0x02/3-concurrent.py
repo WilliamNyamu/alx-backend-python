@@ -5,6 +5,17 @@ import aiosqlite
 from aiosqlite import Error
 import time
 import asyncio
+import functools
+
+def timer(func):
+    @functools.wraps(func)
+    async def wrapper(*args, **kwargs):
+        start_time = time.perf_counter()
+        value = await func(*args, **kwargs)
+        elapsed = time.perf_counter() - start_time
+        print(f"Time taken: {elapsed:.2f} seconds")
+        return value
+    return wrapper
 
 async def async_fetch_users():
     async with aiosqlite.connect('users.db') as db:
@@ -21,15 +32,16 @@ async def async_fetch_older_users():
     async with aiosqlite.connect('users.db') as db:
         try:
             cursor = await db.cursor()
-            await cursor.execute("SELECT * FROM users WHERE age > 40")
+            await cursor.execute("SELECT * FROM users WHERE age > 100")
             results = await cursor.fetchall()
             return results
         except Error as e:
             print(f"Error occured: {e}")
         
+@timer
+async def main():
+    users = await async_fetch_users()
+    for user in users:
+        print(user)
 
-async def fetch_concurrently():
-    all_users, older_users = await asyncio.gather(async_fetch_users(), async_fetch_older_users())
-    return all_users, older_users
-
-print(asyncio.run(fetch_concurrently()))
+asyncio.run(main())
