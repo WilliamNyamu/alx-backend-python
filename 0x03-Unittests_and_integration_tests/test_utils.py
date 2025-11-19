@@ -1,6 +1,9 @@
+#!/usr/bin/env python3
+
 # Create a TestAccessNestedMap class that inherits from unittest.TestCase.
 
-# Implement the TestAccessNestedMap.test_access_nested_map method to test that the method returns what it is supposed to.
+# Implement the TestAccessNestedMap.test_access_nested_map method to test 
+# that the method returns what it is supposed to.
 
 # Decorate the method with @parameterized.expand to test the function for following inputs:
 
@@ -53,6 +56,8 @@ class TestMemoize(unittest.TestCase):
     def test_memoize(self):
         # Define a local class to test the memoize decorator
         class TestClass:
+
+
             # Simple method that we will later patch
             def a_method(self):
                 return 42
@@ -69,7 +74,7 @@ class TestMemoize(unittest.TestCase):
 
         # Patch TestClass.a_method so we can track how many times it is called.
         # patch.object is required because TestClass is defined locally here.
-        with patch.object(TestClass, "a_method", return_value=42) as mock_method:
+        with patch.object(TestClass, "a_method", return_value = 42) as mock_method:
             # First access should call the real (mocked) method
             first_value = obj.a_property
 
