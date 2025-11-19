@@ -12,6 +12,7 @@ from utils import access_nested_map, get_json, memoize
 
 
 class TestAccessNestedMap(unittest.TestCase):
+    """Testing the imported access nested map using parameterized"""
     @parameterized.expand([
         ({'a': 1}, ('a',), 1),
         ({'a': {'b': 2}}, ('a',), {'b': 2}),
@@ -65,8 +66,8 @@ class TestMemoize(unittest.TestCase):
 
         obj = TestClass()
 
-        # Patch TestClass.a_method so calls are tracked
-        with patch.object(TestClass, "a_method", return_value=42) as mock_method:
+        # Patch TestClass.a_method
+        with patch.object(TestClass, "a_method", return_value=42) as m_method:
             first_value = obj.a_property
             second_value = obj.a_property
 
@@ -75,7 +76,7 @@ class TestMemoize(unittest.TestCase):
             self.assertEqual(second_value, 42)
 
             # Ensure underlying method is only called once
-            mock_method.assert_called_once()
+            m_method.assert_called_once()
 
 
 if __name__ == "__main__":
