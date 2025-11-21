@@ -141,5 +141,56 @@ class TestIntegrationGithubOrgClient(unittest.TestCase):
         cls.get_patcher.stop()
 
 
+@parameterized_class([
+    {
+        "org_payload": TEST_PAYLOAD[0][0],
+        "repos_payload": TEST_PAYLOAD[0][1],
+        "expected_repos": TEST_PAYLOAD[0][2],
+        "apache2_repos": TEST_PAYLOAD[0][3]
+    }
+])
+class TestIntegrationGithubOrgClient(unittest.TestCase):
+    """Integration tests for GithubOrgClient.public_repos method."""
+
+    @classmethod
+    def setUpClass(cls):
+        """Set up class fixtures.
+
+        Mocks requests.get to return example payloads from fixtures.
+        """
+        cls.get_patcher = patch('requests.get')
+        cls.mock_get = cls.get_patcher.start()
+
+        def side_effect(url):
+            mock_response = Mock()
+            if url == "https://api.github.com/orgs/google":
+                mock_response.json.return_value = cls.org_payload
+            elif url == cls.org_payload["repos_url"]:
+                mock_response.json.return_value = cls.repos_payload
+            return mock_response
+
+        cls.mock_get.side_effect = side_effect
+
+    @classmethod
+    def tearDownClass(cls):
+        """Tear down class fixtures.
+
+        Stops the patcher.
+        """
+        cls.get_patcher.stop()
+
+    def test_public_repos(self):
+        """Test that public_repos returns expected repos from fixtures."""
+        client = GithubOrgClient('google')
+        result = client.public_repos()
+        self.assertEqual(result, self.expected_repos)
+
+    def test_public_repos_with_license(self):
+        """Test public_repos with license filter returns expected repos."""
+        client = GithubOrgClient('google')
+        result = client.public_repos(license="apache-2.0")
+        self.assertEqual(result, self.apache2_repos)
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)
