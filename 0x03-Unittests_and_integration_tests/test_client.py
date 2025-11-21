@@ -7,9 +7,10 @@ for comprehensive testing.
 """
 
 import unittest
-from unittest.mock import patch, PropertyMock
-from parameterized import parameterized
+from unittest.mock import patch, PropertyMock, Mock
+from parameterized import parameterized, parameterized_class
 from client import GithubOrgClient
+from fixtures import TEST_PAYLOAD
 
 
 class TestGithubOrgClient(unittest.TestCase):
@@ -97,6 +98,47 @@ class TestGithubOrgClient(unittest.TestCase):
         org_client = GithubOrgClient('google')
         result = org_client.has_license(repo=license, license_key=license_key)
         self.assertEqual(result, expected)
+
+
+
+@parameterized_class([
+    {
+        "org_payload": TEST_PAYLOAD[0][0],
+        "repos_payload": TEST_PAYLOAD[0][1],
+        "expected_repos": TEST_PAYLOAD[0][2],
+        "apache2_repos": TEST_PAYLOAD[0][3]
+    }
+])
+class TestIntegrationGithubOrgClient(unittest.TestCase):
+    """Integration tests for GithubOrgClient.public_repos method."""
+
+    @classmethod
+    def setUpClass(cls):
+        """Set up class fixtures.
+
+        Mocks requests.get to return example payloads from fixtures.
+        """
+        cls.get_patcher = patch('requests.get')
+        cls.mock_get = cls.get_patcher.start()
+
+        # Define side_effect to return correct payload based on URL
+        def side_effect(url):
+            mock_response = Mock()
+            if url == "https://api.github.com/orgs/google":
+                mock_response.json.return_value = cls.org_payload
+            elif url == cls.org_payload["repos_url"]:
+                mock_response.json.return_value = cls.repos_payload
+            return mock_response
+
+        cls.mock_get.side_effect = side_effect
+
+    @classmethod
+    def tearDownClass(cls):
+        """Tear down class fixtures.
+
+        Stops the patcher.
+        """
+        cls.get_patcher.stop()
 
 
 if __name__ == "__main__":
