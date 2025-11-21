@@ -47,7 +47,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
-    'corsheaders'
+    'corsheaders',
+    'chats'
 ]
 
 MIDDLEWARE = [
@@ -142,3 +143,5 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.IsAuthenticated'
     ],
 }
+
+AUTH_USER_MODEL = 'chats.CustomUser'
