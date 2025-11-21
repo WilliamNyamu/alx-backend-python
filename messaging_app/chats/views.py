@@ -26,7 +26,7 @@ class ConversationViewSet(viewsets.ModelViewSet):
     def send_message(self, request, pk=None):
         """Send a message to an existing conversation"""
         conversation = self.get_object()
-        
+        filters = None
         message_data = {
             'sender_id': request.data.get('sender_id'),
             'message_body': request.data.get('message_body'),
