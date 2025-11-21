@@ -43,19 +43,16 @@ class CustomUser(AbstractUser):
 
     def __str__(self):
         return self.email
-
-
-class Message(models.Model):
-    """Message model"""
-    message_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    sender_id = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
-    message_body = models.TextField(null=False)
-    sent_at = models.DateTimeField(auto_now=True)
-
-    def __str__(self):
-        return f"{self.sender_id.first_name} sent a message"
-
+    
 class Conversation(models.Model):
     conversation_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     participants_id = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now=True)
+
+class Message(models.Model):
+    message_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    sender_id = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    conversation = models.ForeignKey(Conversation, on_delete=models.CASCADE, related_name='messages')
+    message_body = models.TextField(null=False)
+    sent_at = models.DateTimeField(auto_now=True)
+
