@@ -46,8 +46,11 @@ class CustomUser(AbstractUser):
     
 class Conversation(models.Model):
     conversation_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    participants_id = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    participants_id = models.ManyToManyField(CustomUser, related_name='conversations')
     created_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"Conversation {self.conversation_id}"
 
 class Message(models.Model):
     message_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -56,3 +59,9 @@ class Message(models.Model):
     message_body = models.TextField(null=False)
     sent_at = models.DateTimeField(auto_now=True)
 
+    class Meta:
+        ordering = ['sent_at']
+
+    def __str__(self):
+        return f"{self.sender_id.get_full_name} sends a message in {self.conversation.conversation_id} at {self.sent_at}"
+    
