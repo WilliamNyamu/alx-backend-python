@@ -1,0 +1,1 @@
+## Permissions for the chat
