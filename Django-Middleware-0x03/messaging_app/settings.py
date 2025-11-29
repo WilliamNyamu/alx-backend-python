@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 from pathlib import Path
 import os
 import environ
+from datetime import timedelta
 
 #Initialize the environ
 env = environ.Env(
@@ -151,3 +152,10 @@ REST_FRAMEWORK = {
 }
 
 AUTH_USER_MODEL = 'chats.CustomUser'
+
+
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),
+    'REFRESH_TOKEN_LIFETIME': timedelta(hours=24),
+    'USER_ID_FIELD': 'user_id'
+}

@@ -12,12 +12,30 @@ class RequestLoggingMiddleware:
     """
     def __init__(self, get_response):
         self.get_response = get_response
-    
+        
+        # Set up the logger
+        self.logger = logging.getLogger(__name__)
+        self.logger.setLevel(logging.DEBUG)
+
+
+        # File handler
+        file_handler = logging.FileHandler('request.log')
+
+        # console handler
+        console_handler = logging.StreamHandler()
+
+
+        self.logger.addHandler(file_handler)
+        self.logger.addHandler(console_handler)
+
     def __call__(self, request):
 
-        logging.basicConfig(filename='request.log', filemode='a', encoding='UTF8')
-        logging.info(f"{datetime.now()} - User:{request.user} - Path:{request.path}")
+        
 
         response = self.get_response(request)
+        
+        user = request.user if hasattr(request, 'user') else 'Unknown user'
+
+        self.logger.info(f"{datetime.now()} - User: {user} - Path: {request.path}")
 
         return response
