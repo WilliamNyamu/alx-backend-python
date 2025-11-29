@@ -41,7 +41,7 @@ class RequestLoggingMiddleware:
         return response
 
 
-class RequestAccessByTimeMiddleware:
+class RestrictAccessByTimeMiddleware:
     """
     Checks server time and denies access if time is outside 9pm and 6pm
     """
