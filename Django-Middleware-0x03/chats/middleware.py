@@ -19,7 +19,7 @@ class RequestLoggingMiddleware:
 
 
         # File handler
-        file_handler = logging.FileHandler('request.log')
+        file_handler = logging.FileHandler('requests.log')
 
         # console handler
         console_handler = logging.StreamHandler()
@@ -33,7 +33,7 @@ class RequestLoggingMiddleware:
         
 
         response = self.get_response(request)
-        
+
         user = request.user if hasattr(request, 'user') else 'Unknown user'
 
         self.logger.info(f"{datetime.now()} - User: {user} - Path: {request.path}")
