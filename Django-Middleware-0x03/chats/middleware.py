@@ -109,3 +109,20 @@ class OffensiveLanguageMiddleware:
         else:
             ip = request.META.get('REMOTE_ADDR')
         return ip
+
+
+class RolepermissionMiddleware:
+    """
+    Checks whether the user is 'is_admin' from the incoming request and returns the 403 if not.
+    """
+    def __init__(self, get_response):
+        self.get_response = get_response
+    
+    def __call__(self, request):
+        
+        if not request.user.is_superuser:
+            raise PermissionDenied()
+
+        response = self.get_response(request)
+
+        return response
