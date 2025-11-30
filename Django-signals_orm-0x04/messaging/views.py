@@ -1,3 +1,4 @@
+# views.py
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import logout
@@ -5,7 +6,7 @@ from django.contrib import messages as django_messages
 from django.db import transaction
 from django.views.decorators.http import require_http_methods
 from django.contrib.auth import get_user_model
-from .models import Message, Notification, MessageHistory
+from .models import Message, Notification, UserDeletionLog, MessageHistory
 
 
 User = get_user_model()
