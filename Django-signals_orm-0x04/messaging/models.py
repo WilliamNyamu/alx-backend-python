@@ -1,14 +1,12 @@
 # models.py
 from django.db import models
-from django.contrib.auth import get_user_model
+from django.contrib.auth.models import User
 from django.utils import timezone
-
-User = get_user_model()
 
 
 class Message(models.Model):
     """
-    Message model for user-to-user messaging
+    Message model with edit tracking
     """
     sender = models.ForeignKey(
         User, 
@@ -24,6 +22,11 @@ class Message(models.Model):
     timestamp = models.DateTimeField(default=timezone.now)
     is_read = models.BooleanField(default=False)
     
+    # NEW: Edit tracking fields
+    edited = models.BooleanField(default=False)
+    last_edited_at = models.DateTimeField(null=True, blank=True)
+    edit_count = models.PositiveIntegerField(default=0)
+    
     class Meta:
         ordering = ['-timestamp']
         indexes = [
@@ -32,16 +35,61 @@ class Message(models.Model):
         ]
     
     def __str__(self):
-        return f"From {self.sender.username} to {self.receiver.username} at {self.timestamp}"
+        edit_status = " (edited)" if self.edited else ""
+        return f"From {self.sender.username} to {self.receiver.username}{edit_status}"
+    
+    def get_edit_history(self):
+        """Helper method to retrieve all edit history for this message"""
+        return self.edit_history.all().order_by('-edited_at')
+    
+    def has_been_edited(self):
+        """Check if message has edit history"""
+        return self.edit_history.exists()
+
+
+class MessageHistory(models.Model):
+    """
+    Stores the history of message edits.
+    Each time a message is edited, the OLD content is saved here.
+    """
+    message = models.ForeignKey(
+        Message,
+        on_delete=models.CASCADE,
+        related_name='edit_history'
+    )
+    old_content = models.TextField()
+    edited_at = models.DateTimeField(auto_now_add=True)
+    edited_by = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL,
+        null=True,
+        related_name='message_edits'
+    )
+    
+    class Meta:
+        ordering = ['-edited_at']
+        verbose_name = 'Message History'
+        verbose_name_plural = 'Message Histories'
+        indexes = [
+            models.Index(fields=['message', '-edited_at']),
+        ]
+    
+    def __str__(self):
+        return f"Edit of message {self.message.id} at {self.edited_at}"
+    
+    def content_preview(self):
+        """Return a preview of the old content"""
+        return self.old_content[:100] + '...' if len(self.old_content) > 100 else self.old_content
 
 
 class Notification(models.Model):
     """
-    Notification model to store user notifications
+    Notification model (keeping from previous exercise)
     """
     NOTIFICATION_TYPES = (
         ('new_message', 'New Message'),
         ('message_read', 'Message Read'),
+        ('message_edited', 'Message Edited'),
         ('other', 'Other'),
     )
     
@@ -68,15 +116,6 @@ class Notification(models.Model):
     
     class Meta:
         ordering = ['-created_at']
-        indexes = [
-            models.Index(fields=['user', '-created_at']),
-            models.Index(fields=['user', 'is_read']),
-        ]
     
     def __str__(self):
         return f"Notification for {self.user.username}: {self.content}"
-    
-    def mark_as_read(self):
-        """Helper method to mark notification as read"""
-        self.is_read = True
-        self.save(update_fields=['is_read'])
