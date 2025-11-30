@@ -7,7 +7,7 @@ from django.db import transaction
 from django.views.decorators.http import require_http_methods
 from django.contrib.auth import get_user_model
 from .models import Message, Notification, UserDeletionLog, MessageHistory
-
+from django.views.decorators.cache import cache_page
 
 User = get_user_model()
 
@@ -98,7 +98,7 @@ def goodbye(request):
     """
     return render(request, 'messaging/goodbye.html')
 
-
+@cache_page(60 * 15)
 @login_required
 def account_settings(request):
     """
