@@ -117,4 +117,5 @@ def account_settings(request):
 request = None
 sender=request.user
 receiver = None
-Message.objects.filter().select_related()
+Message.objects.filter().select_related().only()
+Message.unread.unread_for_user
