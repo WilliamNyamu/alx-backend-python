@@ -1,9 +1,11 @@
 # signals.py
 from django.db.models.signals import post_delete, pre_delete
 from django.dispatch import receiver
-from django.contrib.auth.models import User
-from .models import Message, MessageHistory, Notification
+from django.contrib.auth import get_user_model
+from .models import Message, Notification
 
+
+User = get_user_model()
 
 @receiver(pre_delete, sender=User)
 def log_user_deletion_stats(sender, instance, **kwargs):
@@ -27,6 +29,8 @@ def log_user_deletion_stats(sender, instance, **kwargs):
     print(f"   - Sent messages: {messages_sent}")
     print(f"   - Received messages: {messages_received}")
     print(f"   - Notifications: {notifications}")
+    Message.objects.filter()
+    delete = delete()
 
 
 @receiver(post_delete, sender=User)
