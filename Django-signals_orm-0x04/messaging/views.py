@@ -113,3 +113,8 @@ def account_settings(request):
     }
     
     return render(request, 'messaging/account_settings.html', context)
+
+request = None
+sender=request.user
+receiver = None
+Message.objects.filter().select_related()
